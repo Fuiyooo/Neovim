@@ -1,0 +1,39 @@
+return {
+  {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    config = function()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "lua_ls", "pyright", "ts_ls" },
+      })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      -- Ganti cara panggil lspconfig supaya gak kena deprecated warning
+      local lspconfig = require("lspconfig")
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+      -- Daftar server yang mau diaktifkan
+      local servers = { "lua_ls", "pyright", "ts_ls" }
+
+      for _, lsp in ipairs(servers) do
+        lspconfig[lsp].setup({
+          capabilities = capabilities,
+        })
+      end
+
+      -- Keymaps tetap sama
+      vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "LSP Hover" })
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "Go to Definition" })
+      vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = "Code Action" })
+      vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Rename Variable" })
+    end,
+  },
+}
